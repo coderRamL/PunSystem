@@ -1,0 +1,17 @@
+[project]
+name = "punsystem"
+version = "0.1.0"
+description = "Pun analysis agent using Strands and spaCy"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "python-dotenv>=1.0.1",
+    "spacy>=3.7.0",
+    "nltk>=3.8.1",
+    "strands-agents[ollama]>=1.27.0",
+    "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl"
+]
+
+[tool.uv]
+# Note: Use 'python-preference' to ensure it picks your installed 3.12
+managed = true
