@@ -20,6 +20,19 @@ agent = Agent(
 )
 
 if __name__ == "__main__":
-    pun = input("Enter a pun: ")
-    # The agent calls your function, gets the dictionary, and explains it to you
-    print(agent(pun))
+    print("🎭 Welcome to the PunSystem! Type 'exit' to quit.")
+    
+    while True:
+        user_input = input("\nYou: ")
+        
+        # Check for exit commands
+        if user_input.lower() in ['exit', 'quit']:
+            print("Exiting PunSystem. Goodbye!")
+            break
+            
+        # The agent maintains conversation history automatically 
+        try:
+            response = agent(user_input)
+            print(f"\nAgent: {response}")
+        except Exception as e:
+            print(f"\nAgent Error: Whoops, something went wrong. ({e})")
