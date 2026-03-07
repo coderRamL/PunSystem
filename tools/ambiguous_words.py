@@ -3,7 +3,6 @@ from typing import Annotated
 from nltk.corpus import wordnet as wn
 from strands import tool
 
-# Keeping your original POS dictionary
 POS_DICT = {
     "NOUN": wn.NOUN,
     "VERB": wn.VERB,
@@ -13,25 +12,31 @@ POS_DICT = {
 
 language = spacy.load("en_core_web_sm")
 
-# Your original helper function
-def get_senses(word, pos):
-    if pos in POS_DICT:
-        return wn.synsets(word, pos=POS_DICT[pos])
-    else: 
-        return []
-
-# Your main logic, now marked as a tool
 @tool
-def identify_ambiguous_words(phrase: Annotated[str, "The pun or phrase to analyze"]):
+def identify_ambiguous_words(phrase: Annotated[str, "The full pun or sentence to analyze"]):
     """
-    Parses senses from the text to identify ambiguous words.
+    Analyzes a phrase to return word pairs, their distinct senses, and the pun type.
+    Detects Homographic (look alike) puns.
     """
-    amb_words = {}
     doc = language(phrase)
-    for i in doc:
-        if i.pos_ == "NOUN":
-            senses = get_senses(i.lemma_, "NOUN")
-            if len(senses) >= 2:
-                # We convert synsets to definitions so the LLM can read them
-                amb_words[i.text] = [s.definition() for s in senses]
-    return amb_words
+    results = []
+
+    for token in doc:
+        if token.pos_ not in ["NOUN", "VERB", "ADJ"]:
+            continue
+
+        word = token.text.lower()
+        lemma = token.lemma_.lower()
+        
+        #Check for Homographic Puns (Multiple senses for the same spelling)
+        senses = wn.synsets(lemma)
+        if len(senses) >= 2:
+            results.append({
+                "word_pair": (word, word),
+                "wordsense1": senses[0].definition(),
+                "wordsense2": senses[1].definition(),
+                "pun_type": "Homographic (Polysemy)",
+                "target": word
+            })
+    
+    return results
