@@ -10,10 +10,34 @@ POS_DICT = {
     "ADV": wn.ADV
 }
 
-language = spacy.load("en_core_web_sm")
+language = spacy.load("en_core_web_md")
+
+def get_senses(word, pos):
+    if pos in POS_DICT:
+        return wn.synsets(word, pos=POS_DICT[pos])
+    else: 
+        return []
+
+def identify_ambiguous_words(phrase):
+    amb_words = {}
+    doc = language(phrase)
+    for i in doc:
+        if i.pos_ == "NOUN":
+            senses = get_senses(i.lemma_, "NOUN")
+            if len(senses) >= 2:
+                amb_words[i.text] = senses
+    return amb_words
 
 @tool
-def identify_ambiguous_words(phrase: Annotated[str, "The full pun or sentence to analyze"]):
+def show_senses(amb_words): #original show senses function for user clarity
+    senses=[]
+    for i, j in amb_words.items():
+        print(f"\nAmbiguous word: {i}")
+        for k, l in enumerate(j[:5], 1):
+            print(f"Sense {k}: {l.definition()}")
+
+@tool
+def pun_word_pair(phrase: Annotated[str, "The full pun or sentence to analyze"]): #final pun word pair
     """
     Analyzes a phrase to return word pairs, their distinct senses, and the pun type.
     Detects Homographic (look alike) puns.
@@ -40,3 +64,4 @@ def identify_ambiguous_words(phrase: Annotated[str, "The full pun or sentence to
             })
     
     return results
+
