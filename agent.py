@@ -33,7 +33,7 @@ agent = Agent(
         "5. Return the type of pun Homophonic ('sounds like', or two words sound the same) type puns"
         "or Homographic ('looks like', words that are polysemous')."
         "6. If neither homophonic or homographic, look for 'near-puns' by using check phonetic similarity. Anything < 1, >= .7 is a candidate for a near-pun." 
-        "7. Use evaluate_pun to determine whether the pun can be classified as humorous"
+        "7. Use evaluate_pun to determine whether the pun can be classified as humorous, return data and verdict. Ambiguity < .7 is NOT a pun."
         ""
 
         "STRUCTURED OUTPUT:"
@@ -43,13 +43,12 @@ agent = Agent(
         "**Pun Type:** [Homophonic/Homographic/Near-Pun]"
         "**Humor Data:** Ambiguity <ambiguity_entropy> | Distinctness <distinctiveness_kl> "
         "**Humor Verdict**: <verdict>"
-        "**Summary**: <provide an explanation of why this pun is funny, the type of pun, and use all provided data>"
-        ""
+        "**Summary**: <If a pun is detected, provide an explanation of why this pun is funny, the type of pun, and use all provided data>"
 
-       "Explain the nature of the pun to the user by leveraging your tools."
         ""
         "CONSTRAINTS:"
         "DO NOT respell user input, if they mispell something, this may be intentional. Either identify this to the user OR check for near-puns."
+        "Analysis should result in ONE of [VALID JOKE (Incongruity Detected), NONSENSE (Confusing/De-punned), STANDARD LANGUAGE (One story dominates)]"
         #"Users should ONLY discuss pun results or attempt to provide puns. Users may ask clarifying questions about any of the content provided by the pun system."
 )
 
@@ -70,3 +69,4 @@ if __name__ == "__main__":
             print(f"\nAgent: {response}")
         except Exception as e:
             print(f"\nAgent Error: Whoops, something went wrong. ({e})")
+
